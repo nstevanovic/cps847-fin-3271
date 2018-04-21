@@ -1,0 +1,18 @@
+BEGIN;
+--
+-- Create model Choice
+--
+CREATE TABLE "survey_choice" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "choice_text" varchar(200) NOT NULL, "votes" integer NOT NULL);
+--
+-- Create model Question
+--
+CREATE TABLE "survey_question" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "question_text" varchar(200) NOT NULL, "pub_date" datetime NOT NULL);
+--
+-- Add field question to choice
+--
+ALTER TABLE "survey_choice" RENAME TO "survey_choice__old";
+CREATE TABLE "survey_choice" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "choice_text" varchar(200) NOT NULL, "votes" integer NOT NULL, "question_id" integer NOT NULL REFERENCES "polls_question" ("id") DEFERRABLE INITIALLY DEFERRED);
+INSERT INTO "survey_choice" ("id", "choice_text", "votes", "question_id") SELECT "id", "choice_text", "votes", NULL FROM "survey_choice__old";
+DROP TABLE "survey_choice__old";
+CREATE INDEX "survey_choice_question_id_c5b4b260" ON "survey_choice" ("question_id");
+COMMIT;
